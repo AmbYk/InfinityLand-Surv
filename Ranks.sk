@@ -1,0 +1,298 @@
+on join:
+	if {vip.expiredate.%player%} is set:
+		if {vip.expiredate.%player%} was more than a second ago:
+			wait 5 seconds
+			send "&r" to player
+			send "&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■" to player
+			send "&4■         &c&l»»» &4&lTvé dočasné VIP již vypršelo! &c&l«««" to player
+			send "&c■" to player
+			send "&4■        &7Tvé dočasné VIP právě vypršelo a byly ti" to player
+			send "&c■     &7tak odebrány i všechny související VIP výhody." to player
+			send "&4■" to player
+			send "&c■    &cZakup si znovu VIP a užívej si znovu skvělé výhody!" to player
+			send "&4■                          &6&l---> &e&l/vip &6&l<---" to player
+			send "&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■&c■&4■" to player
+			send "&r" to player
+			broadcast "&6&l[Server] &7Hráči &e%player% &7právě vypršelo jeho dočasné VIP! &8(&a/vip&8)"
+			log "[VIP - EXP] %player% (%ip of player%) byl odstranen z VIP clenu z duvodu: ""VIP expirovalo"" (by Konzole)." to "logs/clans-and-ranks.log"
+			remove player from {vip.members::*}
+			clear {vip.expiredate.%player%}
+
+	if {vip.treecapitator.%player%} is not set:
+		if {vip.members::*} contains player:
+			set {vip.treecapitator.%player%} to true
+			set {vip.treecapitatorcounter.%player%} to 5
+
+	if {vip.leavescapitator.%player%} is not set:
+		if {vip.members::*} contains player:
+			set {vip.leavescapitator.%player%} to true
+			set {vip.leavescapitatorcounter.%player%} to 5
+
+	if {vip.autoinvcounter.%player%} is not set:
+		if {vip.members::*} contains player:
+			set {vip.autoinvcounter.%player%} to false
+
+# ------------------------------------
+
+command /addadmin [<offline player>]:
+	trigger:
+		if executor is console:
+			if arg 1 is set:
+				if {ban.admins::*} contains arg 1:
+					send "&4&l[Chyba] &cTento uživatel je již administrátor." to executor
+					stop
+				else:
+					set {_ban.addadmin.player} to arg 1
+					add arg 1 to {ban.admins::*}
+					send "&8&l[&6&l!&8&l] &7Hráč &e%{_ban.addadmin.player}% &7byl úspěšně &apřidán &7mezi administrátory." to executor
+					log "[ADMIN - ADD] %arg 1% (%ip of arg 1%) byl pridan mezi Administratory (by Konzole)." to "logs/clans-and-ranks.log"
+					stop
+			else:
+				send "&4&l[Chyba] &cJe nutné zadat nick hráče." to executor
+				stop
+		else:
+			send "&4&l[Chyba] &cPřidávat adminy může pouze konzole." to player
+			stop
+
+# ------------------------------------
+
+command /deladmin [<offline player>]:
+	trigger:
+		if executor is console:
+			if arg 1 is set:
+				if {ban.admins::*} contains arg 1:
+					set {_ban.deladmin.player} to arg 1
+					remove arg 1 from {ban.admins::*}
+					send "&8&l[&6&l!&8&l] &7Hráč &e%{_ban.deladmin.player}% &7byl úspěšně &codebrán &7z řad administrátorů." to executor
+					log "[ADMIN - REM] %arg 1% (%ip of arg 1%) byl odebran z Administratoru (by Konzole)." to "logs/clans-and-ranks.log"
+					stop
+				else:
+					send "&4&l[Chyba] &cTento uživatel není administrátor." to executor
+					stop
+			else:
+				send "&4&l[Chyba] &cJe nutné zadat nick hráče." to executor
+				stop
+		else:
+			send "&4&l[Chyba] &cOdebírat adminy může pouze konzole." to player
+			stop
+
+# ------------------------------------
+# ------------------------------------
+
+command /addvip [<offline player>] [<number>]:
+	trigger:
+		if executor is console:
+			if arg 1 is set:
+				if {vip.members::*} contains arg 1:
+					send "&4&l[Chyba] &cTento uživatel je již VIP." to executor
+					stop
+				else:
+					if arg 2 is set:
+						set {vip.expiredate.%arg 1%} to now
+						add "%arg 2% seconds" parsed as timespan to {vip.expiredate.%arg 1%}
+
+						set {_vip.addvip.player} to arg 1
+						add arg 1 to {vip.members::*}
+						send "&a&l[VIP] &7Hráč &a%{_vip.addvip.player}% &7byl úspěšně &apřidán &7mezi VIP." to executor
+
+						send "&r" to all players
+						send "&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■" to all players
+						send "&2■      &a&l»»» &2&l%arg 1% &2&lsi aktivoval dočasné VIP! &a&l«««" to all players
+						send "&a■" to all players
+						send "&2■     &7Hráč &7%arg 1% &7si právě zakoupil VIP a aktivoval si" to all players
+						send "&a■           &7tak spoustu skvělých herních výhod." to all players
+						send "&2■" to all players
+						send "&a■      &aZakup si VIP taky a užívej si skvělé herní výhody!" to all players
+						send "&2■                          &2&l---> &a&l/vip &2&l<---" to all players
+						send "&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■" to all players
+						send "&r" to all players
+
+						log "[VIP (temp) - ADD] %arg 1% (%ip of arg 1%) byl pridan mezi VIP cleny s expiraci %{vip.expiredate.%arg 1%}% (by Konzole)." to "logs/clans-and-ranks.log"
+						stop
+					else:
+						set {_vip.addvip.player} to arg 1
+						add arg 1 to {vip.members::*}
+						send "&a&l[VIP] &7Hráč &a%{_vip.addvip.player}% &7byl úspěšně &apřidán &7mezi VIP." to executor
+
+						send "&r" to all players
+						send "&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■" to all players
+						send "&2■    &a&l»»» &2&l%arg 1% &2&lsi aktivoval permanentní VIP! &a&l«««" to all players
+						send "&a■" to all players
+						send "&2■     &7Hráč &7%arg 1% &7si právě zakoupil VIP a aktivoval si" to all players
+						send "&a■           &7tak spoustu skvělých herních výhod." to all players
+						send "&2■" to all players
+						send "&a■      &aZakup si VIP taky a užívej si skvělé herní výhody!" to all players
+						send "&2■                          &2&l---> &a&l/vip &2&l<---" to all players
+						send "&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■&a■&2■" to all players
+						send "&r" to all players
+
+						log "[VIP - ADD] %arg 1% (%ip of arg 1%) byl pridan mezi VIP cleny (by Konzole)." to "logs/clans-and-ranks.log"
+						stop
+			else:
+				send "&4&l[Chyba] &cJe nutné zadat nick hráče." to executor
+				stop
+		else:
+			send "&4&l[Chyba] &cPřidávat VIP může pouze konzole." to player
+			stop
+
+# ------------------------------------
+
+command /delvip [<offline player>]:
+	trigger:
+		if executor is console:
+			if arg 1 is set:
+				if {vip.members::*} contains arg 1:
+					set {_vip.remvip.player} to arg 1
+					remove arg 1 from {vip.members::*}
+					clear {vip.expiredate.%arg 1%}
+					send "&a&l[VIP] &7Hráč &a%{_vip.remvip.player}% &7byl úspěšně &codebrán &7z VIP." to executor
+					log "[VIP - REM] %arg 1% (%ip of arg 1%) byl odstranen z VIP clenu (by Konzole)." to "logs/clans-and-ranks.log"
+					stop
+				else:
+					send "&4&l[Chyba] &cTento uživatel není VIP." to executor
+					stop
+			else:
+				send "&4&l[Chyba] &cJe nutné zadat nick hráče." to executor
+				stop
+		else:
+			send "&4&l[Chyba] &cPřidávat VIP může pouze konzole." to player
+			stop
+
+# ------------------------------------
+# ------------------------------------
+
+command /autoinv:
+	trigger:
+		if {vip.members::*} contains player:
+			if {vip.autoinv.%player%} is true:
+				set {vip.autoinv.%player%} to false
+				send "&a&l[VIP] &eAutoInv &7byl &cvypnut&7.." to player
+			else if {vip.autoinv.%player%} is false:
+				set {vip.autoinv.%player%} to true
+				set {vip.autoinvcounter.%player%} to 63
+				send "&a&l[VIP]&eAutoInv &7byl &azapnut&7.." to player
+		else:
+			send "&4&l[Chyba] &cTento příkaz je pouze pro VIP." to player
+			stop
+
+# ------------------------------------
+
+on mine of stone:
+	if {vip.members::*} contains player:
+		if {vip.autoinv.%player%} is true:
+			cancel event
+			set event-block to air
+			give 1 stone to player
+			if {vip.autoinvcounter.%player%} is equal to 64:
+				send "&a&l[VIP] &7Máš zapnutý &eAutoInv&7, budeš dostávat vybrané itemy rovnou do inventáře &8(&e/autoinv&8)." to player
+				set {vip.autoinvcounter.%player%} to 0
+			add 1 to {vip.autoinvcounter.%player%}
+
+
+# ------------------------------------
+# ------------------------------------
+
+command /treecapitator:
+	trigger:
+		if {vip.members::*} contains player:
+			if {vip.treecapitator.%player%} is true:
+				set {vip.treecapitator.%player%} to false
+				send "&a&l[VIP] &eTreeCapitator &7byl &cvypnut&7.." to player
+			else if {vip.treecapitator.%player%} is false:
+				set {vip.treecapitator.%player%} to true
+				set {vip.treecapitatorcounter.%player%} to 5
+				send "&a&l[VIP]&eTreeCapitator &7byl &azapnut&7.." to player
+		else:
+			send "&4&l[Chyba] &cTento příkaz je pouze pro VIP." to player
+			stop
+
+command /leavescapitator:
+	trigger:
+		if {vip.members::*} contains player:
+			if {vip.leavescapitator.%player%} is true:
+				set {vip.leavescapitator.%player%} to false
+				send "&a&l[VIP] &eLeavesCapitator &7byl &cvypnut&7.." to player
+			else if {vip.leavescapitator.%player%} is false:
+				set {vip.leavescapitator.%player%} to true
+				set {vip.leavescapitatorcounter.%player%} to 5
+				send "&a&l[VIP]&eLeavesCapitator &7byl &azapnut&7.." to player
+		else:
+			send "&4&l[Chyba] &cTento příkaz je pouze pro VIP." to player
+			stop
+
+# ------------------------------------
+
+on break of Oak log or Birch log or Spruce log or Dark Oak log or Acacia log or Jungle log:
+	if {vip.members::*} contains player:
+		if {vip.treecapitator.%player%} is true:
+			if player's held item is air:
+				if {vip.treecapitatorcounter.%player%} is equal to 6:
+					send "&a&l[VIP] &7Máš zapnutý &eTreeCapitator&7, ničíš celé stromy, ale nebudeš dostávat Btc &8(&e/treecapitator&8)." to player
+					set {vip.treecapitatorcounter.%player%} to 0
+				add 1 to {vip.treecapitatorcounter.%player%}
+				remove 1 from {mined.wood.%player%}
+				remove 1 from {bitcoins.mined.wood.%player%}
+				send action bar "&b&lDřevo: &a%{bitcoins.mined.wood.%player%}% &8/ &7320 &8&o(%{mined.wood.%player%}% &8&ocelkem&8&o)" to player
+
+				loop blocks upwards:
+					if loop-block is Oak log or Birch log or Spruce log or Dark Oak log or Acacia log or Jungle log:
+						drop the loop-block-1 at event-block
+						set the loop-block to air
+
+						loop blocks in radius 2 around loop-block:
+							if loop-block-2 is Oak log or Birch log or Spruce log or Dark Oak log or Acacia log or Jungle log:
+								drop the loop-block-2 at event-block
+								set the loop-block-2 to air
+				loop blocks below:
+					if loop-block is Oak log or Birch log or Spruce log or Dark Oak log or Acacia log or Jungle log:
+						drop the loop-block-1 at event-block
+						set the loop-block to air
+
+						loop blocks in radius 2 around loop-block:
+							if loop-block-2 is Oak log or Birch log or Spruce log or Dark Oak log or Acacia log or Jungle log:
+								drop the loop-block-2 at event-block
+								set the loop-block-2 to air
+			else:
+				send "&4&l[Chyba] &cTreeCapitator lze použít jen při kácení rukou (/treecapitator).." to player
+				cancel event
+				stop
+
+on break of leaves:
+	if {vip.members::*} contains player:
+		if {vip.leavescapitator.%player%} is true:
+			if {vip.leavescapitatorcounter.%player%} is equal to 6:
+				send "&a&l[VIP] &7Máš zapnutý &eLeavesCapitator&7, ničíš spoustu listí zároveň &8(&e/leavescapitator&8)." to player
+				set {vip.leavescapitatorcounter.%player%} to 0
+			add 1 to {vip.leavescapitatorcounter.%player%}
+			remove 1 from {mined.wood.%player%}
+			remove 1 from {bitcoins.mined.wood.%player%}
+			send action bar "&b&lDřevo: &a%{bitcoins.mined.wood.%player%}% &8/ &7320 &8&o(%{mined.wood.%player%}% &8&ocelkem&8&o)" to player
+
+			loop blocks in radius 3:
+				if loop-block is Oak leaves:
+					set loop-block to air
+					chance of 20%:
+						drop a oak sapling
+				else if loop-block is Birch leaves:
+					set loop-block to air
+					chance of 20%:
+						drop a birch sapling
+				else if loop-block is Spruce leaves:
+					set loop-block to air
+					chance of 20%:
+						drop a spruce sapling
+				else if loop-block is Dark Oak leaves:
+					set loop-block to air
+					chance of 20%:
+						drop a dark oak sapling
+				else if loop-block is Acacia leaves:
+					set loop-block to air
+					chance of 20%:
+						drop a acacia sapling
+				else if loop-block is Jungle leaves:
+					set loop-block to air
+					chance of 20%:
+						drop a jungle sapling
+
+# ------------------------------------
+# ------------------------------------
